@@ -15,6 +15,7 @@ path = "BirdStickers.png",
 px = 71,
 py = 95
 })
+to_big = to_big or function(x) return x end
 function SMODS.current_mod.process_loc_text()
     G.localization.descriptions.Other['crow_key'] = {
         name = 'Unfortunate bird',
@@ -60,6 +61,14 @@ function SMODS.current_mod.process_loc_text()
         text = {
             'spawns a negative',
             'copy of itself if {C:attention}sold'
+        }
+    }
+    G.localization.descriptions.Other['eternal_negative'] = {
+        name='Immortal',
+        text = {
+            'If this joker is eternal',
+            'it becomes negative at the',
+            'end of the round'
         }
     }
     G.localization.descriptions.Other['showdowns'] = {
@@ -262,13 +271,7 @@ function SMODS.current_mod.process_loc_text()
             { text = ")",                              colour = G.C.UI.TEXT_INACTIVE, scale = 0.3 },
         },
         calc_function = function(card)
-            if to_big then
-                card.joker_display_values.active = (to_big(G.GAME.chips) / to_big(G.GAME.blind.chips) >= to_big(0.8)) and localize("k_active_ex") or "Inactive"
-           
-            else
-                card.joker_display_values.active = (G.GAME and G.GAME.chips and G.GAME.blind.chips and
-                G.GAME.chips / G.GAME.blind.chips >= 0.8) and localize("k_active_ex") or "Inactive"
-            end
+            card.joker_display_values.active = (to_big(G.GAME.chips) / to_big(G.GAME.blind.chips) >= to_big(0.8)) and localize("k_active_ex") or "Inactive"
         end
         }
         JokerDisplay.Definitions["j_bird_jokers_hummingbird_nerd"]={
@@ -278,13 +281,7 @@ function SMODS.current_mod.process_loc_text()
             { text = ")",                              colour = G.C.UI.TEXT_INACTIVE, scale = 0.3 },
         },
         calc_function = function(card)
-            if to_big then
-                card.joker_display_values.active = (to_big(G.GAME.chips) / to_big(G.GAME.blind.chips) >= to_big(0.01*card.ability.extra.percentage)) and localize("k_active_ex") or "Inactive"
-           
-            else
-                card.joker_display_values.active = (G.GAME and G.GAME.chips and G.GAME.blind.chips and
-                G.GAME.chips / G.GAME.blind.chips >= (0.01*card.ability.extra.percentage)) and localize("k_active_ex") or "Inactive"
-            end
+            card.joker_display_values.active = (to_big(G.GAME.chips) / to_big(G.GAME.blind.chips) >= to_big(0.01*card.ability.extra.percentage)) and localize("k_active_ex") or "Inactive"
         end
         }
         JokerDisplay.Definitions["j_bird_jokers_wren"]={
@@ -506,12 +503,20 @@ local house_sparrow = SMODS.Joker{key="house_sparrow",
     cost=2,
     config={mult = 4},
     loc_txt={
-        name="House Sparrow",
-        text={
-            '{C:mult}+#1# mult{},',
-            'Disables the effect of',
-            'all {C:attention}Showdown blinds'
+        ['en-us']={
+            name="House Sparrow",
+            text={
+                '{C:mult}+#1# mult{},',
+                'Disables the effect of',
+                'all {C:attention}Showdown blinds'
         }},
+        ['default']={
+            name="House Sparrow",
+            text={
+                '{C:mult}+#1# mult{},',
+                'Disables the effect of',
+                'all {C:attention}Showdown blinds'
+    }},},
     loc_vars = function(self, info_queue, card)
         local showdown = (G.GAME.round_resets.ante and (G.GAME.win_ante + math.max(0, math.floor((G.GAME.round_resets.ante-1) / G.GAME.win_ante) * G.GAME.win_ante))) or 8 
         info_queue[#info_queue+1] = {set = 'Other', key = 'showdowns', vars = {showdown}}
@@ -557,14 +562,25 @@ local unlucky_crow = SMODS.Joker{
     cost=6,
     config={ x_mult = 1 ,extra = {odds = 4, x_mult=0.25}},
     loc_txt={
-        name="Unlucky Crow",
-        text={
-            'This Joker has a',
-            '{C:green} #3# in #4#{} chance',
-            'to gain {X:mult,C:white}X#2#{} Mult',
-            'every hand',
-        '{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)'
-        }},
+        ['en-us']={
+            name="Unlucky Crow",
+            text={
+                'This Joker has a',
+                '{C:green} #3# in #4#{} chance',
+                'to gain {X:mult,C:white}X#2#{} Mult',
+                'every hand',
+            '{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)'
+            }},
+        ['default']={
+            name="Unlucky Crow",
+            text={
+                'This Joker has a',
+                '{C:green} #3# in #4#{} chance',
+                'to gain {X:mult,C:white}X#2#{} Mult',
+                'every hand',
+            '{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)'
+            }},
+    },
     -- This Joker has a 1 in 4 chance
     -- to gain X0.25 Mult every hand
     --
@@ -620,14 +636,24 @@ local lucky_swallow = SMODS.Joker{
     cost=6,
     config={ x_mult = 1 ,extra = {odds = 8,odds_numer = 1, x_mult=0.25}},
     loc_txt={
-        name="Lucky Swallow",
+        ['en-us']={
+            name="Lucky Swallow",
+            text={
+                'This Joker has a {C:green}#3# in #4#{} chance',
+                'to gain {X:mult,C:white}X#2#{} Mult every hand,',
+                'odds increase per consecutive hand',
+                'played without succeeding',
+                '{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)'
+        }},
+        ['default']={
+             name="Lucky Swallow",
         text={
             'This Joker has a {C:green}#3# in #4#{} chance',
             'to gain {X:mult,C:white}X#2#{} Mult every hand,',
             'odds increase per consecutive hand',
             'played without succeeding',
-        '{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)'
-        }},
+            '{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)'
+        }},},
     -- This Joker has a 
     -- 1 in 8 chance
     -- to gain X0.25 Mult
@@ -690,13 +716,23 @@ local manzai_birds = SMODS.Joker{
     cost=6,
     config={extra = {odds = 4, x_mult=2}},
     loc_txt={
-        name="Manzai Birds",
-        text={
-            'Retrigger the last played',
-            'card used in scoring once,',
-            '{C:green}#1# in #2#{} chance for retriggered',
-            'card to gain {X:mult,C:white}X#3#{} mult'
+        ['en-us'] = {
+            name="Manzai Birds",
+            text={
+                'Retrigger the last played',
+                'card used in scoring once,',
+                '{C:green}#1# in #2#{} chance for retriggered',
+                'card to gain {X:mult,C:white}X#3#{} mult'
         }},
+        ['default']={
+            name="Manzai Birds",
+            text={
+                'Retrigger the last played',
+                'card used in scoring once,',
+                '{C:green}#1# in #2#{} chance for retriggered',
+                'card to gain {X:mult,C:white}X#3#{} mult'
+        }}
+    },
     -- Retrigger the last played
     -- card used in scoring once,
     -- 1 in 4 chance for Retriggered
@@ -758,16 +794,28 @@ local crow_person = SMODS.Joker{
     cost=2,
     config={extra={odds=2 , returned_geometries=0}},
     loc_txt={
-        name="Crow Person",
-        text={
-            'Has a {C:green}#1# in #2#{} chance',
-            'to mark all scored cards',
-            'as sacred geometry cards,',
-            'Transforms into its true form',
-            'if 10 or more sacred geometry',
-            'cards score',
-            '{C:inactive}(Currently #3#/10)'
-        }},
+        ['en-us'] = {
+            name="Crow Person",
+            text={
+                'Has a {C:green}#1# in #2#{} chance',
+                'to mark all scored cards',
+                'as sacred geometry cards,',
+                'Transforms into its true form',
+                'if 10 or more sacred geometry',
+                'cards score',
+                '{C:inactive}(Currently #3#/10)'
+            }},
+        ['default'] = {
+            name="Crow Person",
+            text={
+                'Has a {C:green}#1# in #2#{} chance',
+                'to mark all scored cards',
+                'as sacred geometry cards,',
+                'Transforms into its true form',
+                'if 10 or more sacred geometry',
+                'cards score',
+                '{C:inactive}(Currently #3#/10)'
+            }}},
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = {set = 'Other', key = 'forgiveness'}
         return {vars = {G.GAME.probabilities.normal,card.ability.extra.odds,card.ability.extra.returned_geometries}}
@@ -871,14 +919,25 @@ local true_crow = SMODS.Joker{
     cost=6,
     config={extra={odds=2,x_mult=2}},
     loc_txt={
-        name="Crow Person (True Form)",
-        text={
-            'Has a {C:green}#1# in #2#{} chance',
-            'to mark all scored cards',
-            'as sacred geometry cards,',
-            'Scoring returned sacred geometry',
-            'cards give {X:mult,C:white}X#3#{} mult'
-        }},
+        ['en-us'] = {
+            name="Crow Person (True Form)",
+            text={
+                'Has a {C:green}#1# in #2#{} chance',
+                'to mark all scored cards',
+                'as sacred geometry cards,',
+                'Scoring returned sacred geometry',
+                'cards give {X:mult,C:white}X#3#{} mult'
+            }},
+            ['default'] = {
+            name="Crow Person (True Form)",
+            text={
+                'Has a {C:green}#1# in #2#{} chance',
+                'to mark all scored cards',
+                'as sacred geometry cards,',
+                'Scoring returned sacred geometry',
+                'cards give {X:mult,C:white}X#3#{} mult'
+            }},
+        },
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = {set = 'Other', key = 'forgiveness'}
         return {vars = {G.GAME.probabilities.normal,card.ability.extra.odds,card.ability.extra.x_mult}}
@@ -946,11 +1005,12 @@ local phoenix = SMODS.Joker{
     discovered=false, 
     blueprint_compat=true, 
     perishable_compat=true, 
-    eternal_compat=false,
+    eternal_compat=true,
     pos={ x = 0, y = 0 },
     cost=4,
     config={extra = {destroy_disolve = true}},
     loc_txt={
+        ['en-us'] = {
         name="Phoenix",
         text={
             'Prevents death',
@@ -960,32 +1020,51 @@ local phoenix = SMODS.Joker{
             'spawns a negative copy',
             'of itself if {C:red}destroyed'
         }},
+        ['default'] = {
+        name="Phoenix",
+        text={
+            'Prevents death',
+            'if chips scored',
+            'are at least {C:attention}80%{}',
+            'of required chips',
+            'spawns a negative copy',
+            'of itself if {C:red}destroyed'
+        }}
+    },
     -- Prevents death if chips scored are at least 80% of required chips, spawns a negative copy of itself if destroyed
     loc_vars = function(self, info_queue, card)
         if config.april_fools_test or (todays_date.month==4 and todays_date.day==1) then
             info_queue[#info_queue+1] = {set = 'Other', key = 'april_fools'}
         end
+        info_queue[#info_queue+1] = {set = 'Other', key = 'eternal_negative'}
         return {vars = nil}
     end,
     calculate = function(self,card, context)
-        local scored = to_big and to_big(G.GAME.chips) or G.GAME.chips
-        local required = to_big and to_big(G.GAME.blind.chips) or G.GAME.blind.chips
-        local save_factor = to_big and to_big(0.8) or 0.8
-        if context.end_of_round and context.game_over and 
-        scored/required >= save_factor then
-            G.E_MANAGER:add_event(Event({
-                func = function()
-                    G.hand_text_area.blind_chips:juice_up()
-                    G.hand_text_area.game_chips:juice_up()
-                    play_sound('tarot1')
-                    return true
+        local scored = to_big(G.GAME.chips)
+        local required = to_big(G.GAME.blind.chips)
+        local save_factor = to_big(0.8)
+        if context.end_of_round then
+            if context.game_over and 
+            scored/required >= save_factor then
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        G.hand_text_area.blind_chips:juice_up()
+                        G.hand_text_area.game_chips:juice_up()
+                        play_sound('tarot1')
+                        return true
+                    end
+                })) 
+                return {
+                    message = localize('k_saved_ex'),
+                    saved = true,
+                    colour = G.C.RED
+                }
+            end
+            if card.ability.eternal then
+                if not card.edition or (card.edition and not card.edition.negative) then
+                    card:set_edition("e_negative")
                 end
-            })) 
-            return {
-                message = localize('k_saved_ex'),
-                saved = true,
-                colour = G.C.RED
-            }
+            end
         elseif context.selling_self then
             card.ability.extra.destroy_disolve = false
         end
@@ -1005,6 +1084,7 @@ local humingbird_nerd = SMODS.Joker{
     cost=6,
     config={extra = {percentage = 25,update_flag = false}},
     loc_txt={
+        ['en-us'] = {
         name="Hummingbird Nerd",
         text={
             'Immediately ends',
@@ -1015,6 +1095,18 @@ local humingbird_nerd = SMODS.Joker{
             'by {C:attention}25%{} per hand and',
             'can\'t go over {C:attention}90%{}',
         }},
+        ['default'] = {
+        name="Hummingbird Nerd",
+        text={
+            'Immediately ends',
+            'round if chips',
+            'scored are at least',
+            '{C:attention}#1#%{} of required chips,',
+            'percentage increases',
+            'by {C:attention}25%{} per hand and',
+            'can\'t go over {C:attention}90%{}',
+        }}
+    },
     -- Immediately ends 
     -- round if chips 
     -- scored are at least 
@@ -1026,9 +1118,9 @@ local humingbird_nerd = SMODS.Joker{
         return {vars = {card.ability.extra.percentage}}
     end,
     calculate = function(self,card, context)
-        local scored = to_big and to_big(G.GAME.chips) or G.GAME.chips
-        local required = to_big and to_big(G.GAME.blind.chips) or G.GAME.blind.chips
-        local premature_end = to_big and to_big(card.ability.extra.percentage*0.01) or card.ability.extra.percentage*0.01
+        local scored = to_big(G.GAME.chips)
+        local required = to_big(G.GAME.blind.chips)
+        local premature_end = to_big(card.ability.extra.percentage*0.01)
         --G.GAME.current_round.hands_played
         if context.after then
             card.ability.extra.update_flag = true
@@ -1055,9 +1147,9 @@ local humingbird_nerd = SMODS.Joker{
     end,
     update = function(self, card, dt)
         if card.area == G.jokers and G.STAGE == G.STAGES.RUN and G.STATE == G.STATES.SELECTING_HAND and not card.debuff and card.ability.extra.update_flag then
-            local scored = to_big and to_big(G.GAME.chips) or G.GAME.chips
-            local required = to_big and to_big(G.GAME.blind.chips) or G.GAME.blind.chips
-            local premature_end = to_big and to_big(card.ability.extra.percentage*0.01) or card.ability.extra.percentage*0.01
+            local scored = to_big(G.GAME.chips)
+            local required = to_big(G.GAME.blind.chips)
+            local premature_end = to_big(card.ability.extra.percentage*0.01)
             card.ability.extra.update_flag = false
             if scored/required > premature_end and scored < required then
                 G.STATE = G.STATES.HAND_PLAYED
@@ -1090,7 +1182,8 @@ local wren = SMODS.Joker{
     pos={ x = 0, y = 0 },
     cost=4,
     config= {extra = 1},
-    loc_txt={
+    loc_txt={ 
+        ['en-us'] = {
         name="Wren (Bits and Bops)",
         text={
             'retrigger the first and last',
@@ -1099,6 +1192,16 @@ local wren = SMODS.Joker{
             'scoring hand contains',
             '{C:attention}4 or more{} cards.',
         }},
+        ['default'] = {
+        name="Wren (Bits and Bops)",
+        text={
+            'retrigger the first and last',
+            'cards used in scoring,',
+            'retrigger them twice if',
+            'scoring hand contains',
+            '{C:attention}4 or more{} cards.',
+        }},
+    },
     calculate = function(self,card, context)
         if context.repetition and context.cardarea == G.play then
             card.ability.extra = (#context.scoring_hand >=4 or #context.scoring_hand == 1) and 2 or 1
@@ -1126,6 +1229,7 @@ local canary = SMODS.Joker{
     cost=4,
     config= {extra = 4},
     loc_txt={
+        ['en-us'] = {
         name="Canary (Bits and Bops)",
         text={
             'the last card used in scoring',
@@ -1134,6 +1238,16 @@ local canary = SMODS.Joker{
             'hand contains {C:attention}4 or more{} cards.',
             '{C:inactive}(will give {C:mult}+#1# mult{C:inactive})'
         }},
+        ["default"] = {
+        name="Canary (Bits and Bops)",
+        text={
+            'the last card used in scoring',
+            'gives {C:mult}+4 mult{} when scored',
+            'gives {C:mult}+8 mult{} instead if scoring',
+            'hand contains {C:attention}4 or more{} cards.',
+            '{C:inactive}(will give {C:mult}+#1# mult{C:inactive})'
+        }},
+    },
     loc_vars = function(self, info_queue, card)
         return {vars = {card.ability.extra}}
     end,
@@ -1149,47 +1263,40 @@ local canary = SMODS.Joker{
         end
     end
 }
--- chal = {
---     name = 'Unfavored Underside',
---     key = 'unfavored',
+chal_mv = {
+    name = 'Monument Valley',
+    key = 'mv',
 
---     loc_txt = {
---          ['en-us'] = {name = 'Unfavored Underside'},
---     },
---     rules = {
---         custom = {
---         },
---         modifiers = {
---         }
---     },
---     vouchers = {
---     },
---     deck = {
---         cards = {
---             {s='S', r='4',e='m_wild'},{s='S', r='4',e='m_wild'},{s='S', r='4',e='m_gold'},{s='S', r='4',e='m_gold'},
---             {s='S', r='T',e='m_wild'},{s='S', r='T',e='m_wild'},{s='S', r='T',e='m_gold'},{s='S', r='T',e='m_gold'},
---             {s='H', r='4',e='m_wild'},{s='H', r='4',e='m_wild'},{s='H', r='4',e='m_gold'},{s='H', r='4',e='m_gold'},
---             {s='C', r='4',e='m_wild'},{s='C', r='4',e='m_wild'},{s='C', r='4',e='m_gold'},{s='C', r='4',e='m_gold'},
---             {s='C', r='9',e='m_wild'},{s='C', r='9',e='m_wild'},{s='C', r='9',e='m_gold'},{s='C', r='9',e='m_gold'},
---             {s='C', r='9',e='m_wild'},{s='C', r='9',e='m_wild'},{s='C', r='9',e='m_gold'},{s='C', r='9',e='m_gold'},
---             {s='C', r='T',e='m_wild'},{s='C', r='T',e='m_wild'},{s='C', r='T',e='m_gold'},{s='C', r='T',e='m_gold'},
---             {s='D', r='5',e='m_wild'},{s='D', r='5',e='m_wild'},{s='D', r='5',e='m_gold'},{s='D', r='5',e='m_gold'},
---             {s='D', r='6',e='m_wild'},{s='D', r='6',e='m_wild'},{s='D', r='6',e='m_gold'},{s='D', r='6',e='m_gold'},
---             {s='D', r='8',e='m_wild'},{s='D', r='8',e='m_wild'},{s='D', r='8',e='m_gold'},{s='D', r='8',e='m_gold'},
---             {s='D', r='9',e='m_wild'},{s='D', r='9',e='m_wild'},{s='D', r='9',e='m_gold'},{s='D', r='9',e='m_gold'},
---         }, 
---         type = 'Challenge Deck'
---       },
---     restrictions = {
---         banned_cards = {
---         },
---         banned_tags = {
---         },
---         banned_other = {
---         }
---     }
--- }
--- local chal_unfavored = SMODS.Challenge(chal)
+    loc_txt = {
+         ['en-us'] = {name = 'Monument Valley'},
+         ['default'] = {name = 'Monument Valley'},
+    },
+    rules = {
+        custom = {
+            {id = 'no_extra_hand_money'},
+        },    
+        modifiers = {
+        }
+    },
+    jokers = {
+            {id = 'j_bird_jokers_crow_person', eternal = true},
+            {id = 'j_bird_jokers_crow_person', eternal = true},
+        },
+    vouchers = {
+    },
+    deck = {
+        type = 'Challenge Deck'
+      },
+    restrictions = {
+        banned_cards = {
+        },
+        banned_tags = {
+        },
+        banned_other = {
+        }
+    }
+}
+local chal_valley = SMODS.Challenge(chal_mv)
 
 --- create_card_alt (used by some jokers) ---
 -- Credit to the creators of Joker Evolution for the code
